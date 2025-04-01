@@ -53,7 +53,7 @@ jobs:
 
             - name: publish python package
               run: |
-                jf rt u dist/ python-virtual/example-projects/ --module=jfrog-python-example
+                jf rt u dist/ virtual-pypy-ja/example-projects/ --module=jfrog-python-example
 
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3    
