@@ -14,7 +14,7 @@ jobs:
           DOCKER_REPO: 'docker-prod-local-ja'
           IMAGE_NAME: 'python-test-image-gh'
         outputs:
-          image: ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:latest
+          image: ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}
           digest: ${{ steps.build.outputs.digest }}
         steps:
             # Download the JFrog CLI and configure using JFrog Project and OIDC provider 
@@ -72,16 +72,8 @@ jobs:
               with:
                 push: true
                 platforms: linux/amd64
-                tags: ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:latest
+                tags: ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}
                         
-            - name: Debug image information
-              run: |
-                echo "Image digest: ${{ steps.build.outputs.digest }}"
-                if [ -z "${{ steps.build.outputs.digest }}" ]; then
-                  echo "ERROR: Image digest is empty!"
-                fi
-                echo "Full image reference: ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}"
-                
             - name: docker scan
               run: |  
                  jf docker pull ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}
@@ -105,7 +97,7 @@ jobs:
       needs: [build-publish-python]
       uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.10.0
       with:
-        image: ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}
+        image:  ${{ needs.build-publish-python.outputs.image }}
         digest: ${{ needs.build-publish-python.outputs.digest }}
         registry-username: ${{ vars.JF_USER }}
       secrets:
