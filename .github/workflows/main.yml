@@ -96,6 +96,10 @@ jobs:
     provenance:
       needs: [build-publish-python]
       uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
+      permissions:
+        actions: read
+        id-token: write
+        packages: write
       with:
         image:  ${{ needs.build-publish-python.outputs.image }}
         digest: ${{ needs.build-publish-python.outputs.digest }}
@@ -103,3 +107,12 @@ jobs:
       secrets:
         registry-username: ${{ vars.JF_USER }}
         registry-password: ${{ secrets.JF_ACCESS_TOKEN }}
+
+    debug:
+      needs: [build-publish-python]
+      runs-on: ubuntu-latest
+      steps:
+        - name: Debug outputs
+          run: |
+            echo "Image: ${{ needs.build-publish-python.outputs.image }}"
+            echo "Digest: ${{ needs.build-publish-python.outputs.digest }}"
